@@ -1,17 +1,18 @@
 package com.ruoyi.spm.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 import javax.servlet.http.HttpServletResponse;
+
+import com.alibaba.fastjson2.JSON;
+import com.ruoyi.common.config.RuoYiConfig;
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.system.utils.CourseIdGenerator;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -20,6 +21,7 @@ import com.ruoyi.spm.domain.SpmCourses;
 import com.ruoyi.spm.service.ISpmCoursesService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 课程Controller
@@ -75,8 +77,14 @@ public class SpmCoursesController extends BaseController
     @PreAuthorize("@ss.hasPermi('spm:courses:add')")
     @Log(title = "课程", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody SpmCourses spmCourses)
-    {
+    public AjaxResult add(@RequestParam("courseContent") String spmCoursesString, @RequestParam("courseAvatar") MultipartFile file) throws IOException {
+        List<String> split = StringUtils.str2List(file.getOriginalFilename(), "\\.", true, true);
+        SpmCourses spmCourses = JSON.parseObject(spmCoursesString, SpmCourses.class);
+        spmCourses.setId(CourseIdGenerator.generateString());
+        String fileName = spmCourses.getCourseName() +"-"+ UUID.randomUUID()+"."+split.get(split.size()-1);
+        String storePath = RuoYiConfig.getDownloadPath() + "course-avatar/" + fileName;
+        file.transferTo(new File(storePath));
+        spmCourses.setCourseCoverLink("/static/course-avatar/"+fileName);
         return toAjax(spmCoursesService.insertSpmCourses(spmCourses));
     }
 
@@ -100,5 +108,20 @@ public class SpmCoursesController extends BaseController
     public AjaxResult remove(@PathVariable String[] ids)
     {
         return toAjax(spmCoursesService.deleteSpmCoursesByIds(ids));
+    }
+
+    @PreAuthorize("@ss.hasPermi('spm:courses:edit')")
+    @Log(title = "课程", businessType = BusinessType.UPDATE)
+    @PutMapping("/avatar-modify")
+    public AjaxResult avatarModify(@RequestParam("fileContent") MultipartFile file, @RequestParam("courseId") String courseId) throws IOException {
+        List<String> split = StringUtils.str2List(file.getOriginalFilename(), "\\.", true, true);
+        SpmCourses spmCourses = spmCoursesService.selectSpmCoursesById(courseId);
+        String fileName = spmCourses.getCourseName() +"-"+ UUID.randomUUID()+"."+split.get(split.size()-1);
+        String storePath = RuoYiConfig.getDownloadPath() + "course-avatar/" + fileName;
+        file.transferTo(new File(storePath));
+        SpmCourses courses = new SpmCourses();
+        courses.setCourseCoverLink("/static/course-avatar/"+fileName);
+        courses.setId(courseId);
+        return toAjax(spmCoursesService.updateSpmCourses(courses));
     }
 }

@@ -42,3 +42,11 @@ export function delCourses(id) {
     method: 'delete'
   })
 }
+
+export function modifyCourseAvatar(data) {
+  return request({
+    url: '/spm/courses/avatar-modify',
+    method: 'put',
+    data: data
+  })
+}

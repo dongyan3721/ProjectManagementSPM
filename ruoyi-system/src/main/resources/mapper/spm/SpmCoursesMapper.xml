@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.spm.mapper.SpmCoursesMapper">
+    
+    <resultMap type="SpmCourses" id="SpmCoursesResult">
+        <result property="id"    column="id"    />
+        <result property="courseName"    column="course_name"    />
+        <result property="courseCoverLink"    column="course_cover_link"    />
+        <result property="courseTeacherId"    column="course_teacher_id"    />
+        <result property="courseTeacherName"    column="course_teacher_name"    />
+        <result property="enableTeacherComment"    column="enable_teacher_comment"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectSpmCoursesVo">
+        select id, course_name, course_cover_link, course_teacher_id, course_teacher_name, enable_teacher_comment, del_flag, create_by, create_time, update_by, update_time from spm_courses
+    </sql>
+
+    <select id="selectSpmCoursesList" parameterType="SpmCourses" resultMap="SpmCoursesResult">
+        <include refid="selectSpmCoursesVo"/>
+        <where>  
+            <if test="courseName != null  and courseName != ''"> and course_name like concat('%', #{courseName}, '%')</if>
+            <if test="courseTeacherId != null  and courseTeacherId != ''"> and course_teacher_id = #{courseTeacherId}</if>
+            <if test="courseTeacherName != null  and courseTeacherName != ''"> and course_teacher_name like concat('%', #{courseTeacherName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectSpmCoursesById" parameterType="String" resultMap="SpmCoursesResult">
+        <include refid="selectSpmCoursesVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSpmCourses" parameterType="SpmCourses">
+        insert into spm_courses
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="courseName != null and courseName != ''">course_name,</if>
+            <if test="courseCoverLink != null">course_cover_link,</if>
+            <if test="courseTeacherId != null and courseTeacherId != ''">course_teacher_id,</if>
+            <if test="courseTeacherName != null and courseTeacherName != ''">course_teacher_name,</if>
+            <if test="enableTeacherComment != null">enable_teacher_comment,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="courseName != null and courseName != ''">#{courseName},</if>
+            <if test="courseCoverLink != null">#{courseCoverLink},</if>
+            <if test="courseTeacherId != null and courseTeacherId != ''">#{courseTeacherId},</if>
+            <if test="courseTeacherName != null and courseTeacherName != ''">#{courseTeacherName},</if>
+            <if test="enableTeacherComment != null">#{enableTeacherComment},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSpmCourses" parameterType="SpmCourses">
+        update spm_courses
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="courseName != null and courseName != ''">course_name = #{courseName},</if>
+            <if test="courseCoverLink != null">course_cover_link = #{courseCoverLink},</if>
+            <if test="courseTeacherId != null and courseTeacherId != ''">course_teacher_id = #{courseTeacherId},</if>
+            <if test="courseTeacherName != null and courseTeacherName != ''">course_teacher_name = #{courseTeacherName},</if>
+            <if test="enableTeacherComment != null">enable_teacher_comment = #{enableTeacherComment},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSpmCoursesById" parameterType="String">
+        delete from spm_courses where id = #{id}
+    </delete>
+
+    <delete id="deleteSpmCoursesByIds" parameterType="String">
+        delete from spm_courses where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

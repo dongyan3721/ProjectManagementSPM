@@ -161,6 +161,20 @@ export const dynamicRoutes = [
         meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
       }
     ]
+  },
+  {
+    path: '/spm/study-detail',
+    component: Layout,
+    hidden: false,
+    permissions: ['spm:study:detail'],
+    children: [
+      {
+        path: 'index/:courseId',
+        component: ()=>import("../views/spm/student/course-detail/MyCourseDetail.vue"),
+        name: 'MyCourseDetail',
+        meta: {title: '课程详情', activeMenu: '/spm/study-detail'}
+      }
+    ]
   }
 ]
 

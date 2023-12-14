@@ -51,7 +51,7 @@ public class SpmCoursesController extends BaseController
     /**
      * 导出课程列表
      */
-    @PreAuthorize("@ss.hasPermi('spm:courses:export')")
+    @PreAuthorize("@ss.hasAnyPermi('spm:courses:export')")
     @Log(title = "课程", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, SpmCourses spmCourses)
@@ -64,7 +64,7 @@ public class SpmCoursesController extends BaseController
     /**
      * 获取课程详细信息
      */
-    @PreAuthorize("@ss.hasPermi('spm:courses:query')")
+    @PreAuthorize("@ss.hasPermi('spm:courses:query,spm:study:detail')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") String id)
     {

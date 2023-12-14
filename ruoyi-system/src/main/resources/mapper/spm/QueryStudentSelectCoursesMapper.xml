@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.spm.mapper.QueryStudentSelectCoursesMapper">
+
+    <select id="getSelectedCoursesIds" resultType="java.lang.String">
+        select distinct course_id from spm_courses_select where student_id = #{identification}
+    </select>
+</mapper>

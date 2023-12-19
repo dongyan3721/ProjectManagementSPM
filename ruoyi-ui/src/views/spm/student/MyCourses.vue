@@ -32,6 +32,18 @@ export default {
         createdImg.src = this.networkPrefix+this.selectedCourses[i].courseCoverLink;
         createdImg.alt = "课程图片";
         cells[i].appendChild(createdImg);
+        cells[i].addEventListener("mouseenter", (ev)=>{
+          document.body.style.cursor = "pointer"
+        })
+        cells[i].addEventListener("mouseleave", (ev)=>{
+          document.body.style.cursor = "default"
+        })
+        rightCells[i].addEventListener("mouseenter", (ev)=>{
+          document.body.style.cursor = "pointer"
+        })
+        rightCells[i].addEventListener("mouseleave", (ev)=>{
+          document.body.style.cursor = "default"
+        })
         let teacherName = document.createElement("p")
         teacherName.innerHTML = "授课教师："+this.selectedCourses[i].courseTeacherName;
         let courseName = document.createElement("h2");
@@ -51,11 +63,8 @@ export default {
       }
     },
     handleMouseEnter(ev){
-      document.body.style.cursor = "pointer"
+      // document.body.style.cursor = "pointer"
       this.layOnElement = ev.target
-    },
-    handleMouseLeave(ev){
-      document.body.style.cursor = "auto"
     },
     handleCourseClick(ev){
       let targetCourseId = this.layOnElement.getElementsByClassName("none-display-course-id")[0].innerHTML;
@@ -73,7 +82,7 @@ export default {
     <div class="all-courses-body">
       <el-row :gutter="20" class="all-courses-line">
         <el-col :span="8" class="all-courses-cell">
-          <div class="grid-content bg-purple" @click="handleCourseClick" v-on:mouseenter="handleMouseEnter" v-on:mouseleave="handleMouseLeave">
+          <div class="grid-content bg-purple" @click="handleCourseClick" v-on:mouseenter="handleMouseEnter" >
             <div class="cell-left-pic">
 
             </div>
@@ -82,18 +91,18 @@ export default {
             </div>
           </div>
         </el-col>
-        <el-col :span="8" class="all-courses-cell"><div class="grid-content bg-purple" @click="handleCourseClick" v-on:mouseenter="handleMouseEnter" v-on:mouseleave="handleMouseLeave"><div class="cell-left-pic"></div><div class="cell-right-text"></div></div></el-col>
-        <el-col :span="8" class="all-courses-cell"><div class="grid-content bg-purple" @click="handleCourseClick" v-on:mouseenter="handleMouseEnter" v-on:mouseleave="handleMouseLeave"><div class="cell-left-pic"></div><div class="cell-right-text"></div></div></el-col>
+        <el-col :span="8" class="all-courses-cell"><div class="grid-content bg-purple" @click="handleCourseClick" v-on:mouseenter="handleMouseEnter" ><div class="cell-left-pic"></div><div class="cell-right-text"></div></div></el-col>
+        <el-col :span="8" class="all-courses-cell"><div class="grid-content bg-purple" @click="handleCourseClick" v-on:mouseenter="handleMouseEnter" ><div class="cell-left-pic"></div><div class="cell-right-text"></div></div></el-col>
       </el-row>
       <el-row :gutter="20" class="all-courses-line">
-        <el-col :span="8" class="all-courses-cell"><div class="grid-content bg-purple" @click="handleCourseClick" v-on:mouseenter="handleMouseEnter" v-on:mouseleave="handleMouseLeave"><div class="cell-left-pic"></div><div class="cell-right-text"></div></div></el-col>
-        <el-col :span="8" class="all-courses-cell"><div class="grid-content bg-purple" @click="handleCourseClick" v-on:mouseenter="handleMouseEnter" v-on:mouseleave="handleMouseLeave"><div class="cell-left-pic"></div><div class="cell-right-text"></div></div></el-col>
-        <el-col :span="8" class="all-courses-cell"><div class="grid-content bg-purple" @click="handleCourseClick" v-on:mouseenter="handleMouseEnter" v-on:mouseleave="handleMouseLeave"><div class="cell-left-pic"></div><div class="cell-right-text"></div></div></el-col>
+        <el-col :span="8" class="all-courses-cell"><div class="grid-content bg-purple" @click="handleCourseClick" v-on:mouseenter="handleMouseEnter" ><div class="cell-left-pic"></div><div class="cell-right-text"></div></div></el-col>
+        <el-col :span="8" class="all-courses-cell"><div class="grid-content bg-purple" @click="handleCourseClick" v-on:mouseenter="handleMouseEnter" ><div class="cell-left-pic"></div><div class="cell-right-text"></div></div></el-col>
+        <el-col :span="8" class="all-courses-cell"><div class="grid-content bg-purple" @click="handleCourseClick" v-on:mouseenter="handleMouseEnter" ><div class="cell-left-pic"></div><div class="cell-right-text"></div></div></el-col>
       </el-row>
       <el-row :gutter="20" class="all-courses-line">
-        <el-col :span="8" class="all-courses-cell"><div class="grid-content bg-purple" @click="handleCourseClick" v-on:mouseenter="handleMouseEnter" v-on:mouseleave="handleMouseLeave"><div class="cell-left-pic"></div><div class="cell-right-text"></div></div></el-col>
-        <el-col :span="8" class="all-courses-cell"><div class="grid-content bg-purple" @click="handleCourseClick" v-on:mouseenter="handleMouseEnter" v-on:mouseleave="handleMouseLeave"><div class="cell-left-pic"></div><div class="cell-right-text"></div></div></el-col>
-        <el-col :span="8" class="all-courses-cell"><div class="grid-content bg-purple" @click="handleCourseClick" v-on:mouseenter="handleMouseEnter" v-on:mouseleave="handleMouseLeave"><div class="cell-left-pic"></div><div class="cell-right-text"></div></div></el-col>
+        <el-col :span="8" class="all-courses-cell"><div class="grid-content bg-purple" @click="handleCourseClick" v-on:mouseenter="handleMouseEnter" ><div class="cell-left-pic"></div><div class="cell-right-text"></div></div></el-col>
+        <el-col :span="8" class="all-courses-cell"><div class="grid-content bg-purple" @click="handleCourseClick" v-on:mouseenter="handleMouseEnter" ><div class="cell-left-pic"></div><div class="cell-right-text"></div></div></el-col>
+        <el-col :span="8" class="all-courses-cell"><div class="grid-content bg-purple" @click="handleCourseClick" v-on:mouseenter="handleMouseEnter" ><div class="cell-left-pic"></div><div class="cell-right-text"></div></div></el-col>
       </el-row>
     </div>
   </div>

@@ -21,7 +21,8 @@ export default {
     }
   },
   created() {
-    this.selectDetailedCourseInformation()
+    this.selectDetailedCourseInformation();
+    document.body.style.cursor = "default"
   }
 }
 </script>

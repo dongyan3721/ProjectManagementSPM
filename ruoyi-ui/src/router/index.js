@@ -175,6 +175,20 @@ export const dynamicRoutes = [
         meta: {title: '课程详情', activeMenu: '/spm/study-detail'}
       }
     ]
+  },
+  {
+    path: '/spm/teacher-detail',
+    component: Layout,
+    hidden: false,
+    permissions: ['spm:teacher:detail'],
+    children: [
+      {
+        path: 'index/:courseId',
+        component: ()=>import("../views/spm/teacher/course-detail/LeadCourseDetail.vue"),
+        name: 'MyCourseDetail',
+        meta: {title: '课程详情', activeMenu: '/spm/teacher-detail'}
+      }
+    ]
   }
 ]
 

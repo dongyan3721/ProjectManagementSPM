@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.spm.mapper.SpmHomeworkScoreMapper">
+    
+    <resultMap type="SpmHomeworkScore" id="SpmHomeworkScoreResult">
+        <result property="id"    column="id"    />
+        <result property="homeworkId"    column="homework_id"    />
+        <result property="submitHomeworkId"    column="submit_homework_id"    />
+        <result property="studentId"    column="student_id"    />
+        <result property="studentName"    column="student_name"    />
+        <result property="score"    column="score"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectSpmHomeworkScoreVo">
+        select id, homework_id, submit_homework_id, student_id, student_name, score, del_flag, create_by, create_time, update_by, update_time from spm_homework_score
+    </sql>
+
+    <select id="selectSpmHomeworkScoreList" parameterType="SpmHomeworkScore" resultMap="SpmHomeworkScoreResult">
+        <include refid="selectSpmHomeworkScoreVo"/>
+        <where>  
+            <if test="homeworkId != null  and homeworkId != ''"> and homework_id = #{homeworkId}</if>
+            <if test="submitHomeworkId != null  and submitHomeworkId != ''"> and submit_homework_id = #{submitHomeworkId}</if>
+            <if test="studentId != null  and studentId != ''"> and student_id = #{studentId}</if>
+            <if test="studentName != null  and studentName != ''"> and student_name like concat('%', #{studentName}, '%')</if>
+            <if test="score != null "> and score = #{score}</if>
+        </where>
+    </select>
+    
+    <select id="selectSpmHomeworkScoreById" parameterType="String" resultMap="SpmHomeworkScoreResult">
+        <include refid="selectSpmHomeworkScoreVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSpmHomeworkScore" parameterType="SpmHomeworkScore">
+        <selectKey keyProperty="id" resultType="string" order="BEFORE">
+            select uuid() as id from dual
+        </selectKey>
+        insert into spm_homework_score
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="homeworkId != null and homeworkId != ''">homework_id,</if>
+            <if test="submitHomeworkId != null and submitHomeworkId != ''">submit_homework_id,</if>
+            <if test="studentId != null and studentId != ''">student_id,</if>
+            <if test="studentName != null and studentName != ''">student_name,</if>
+            <if test="score != null">score,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="homeworkId != null and homeworkId != ''">#{homeworkId},</if>
+            <if test="submitHomeworkId != null and submitHomeworkId != ''">#{submitHomeworkId},</if>
+            <if test="studentId != null and studentId != ''">#{studentId},</if>
+            <if test="studentName != null and studentName != ''">#{studentName},</if>
+            <if test="score != null">#{score},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSpmHomeworkScore" parameterType="SpmHomeworkScore">
+        update spm_homework_score
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="homeworkId != null and homeworkId != ''">homework_id = #{homeworkId},</if>
+            <if test="submitHomeworkId != null and submitHomeworkId != ''">submit_homework_id = #{submitHomeworkId},</if>
+            <if test="studentId != null and studentId != ''">student_id = #{studentId},</if>
+            <if test="studentName != null and studentName != ''">student_name = #{studentName},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSpmHomeworkScoreById" parameterType="String">
+        delete from spm_homework_score where id = #{id}
+    </delete>
+
+    <delete id="deleteSpmHomeworkScoreByIds" parameterType="String">
+        delete from spm_homework_score where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

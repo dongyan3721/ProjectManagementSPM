@@ -7,4 +7,8 @@
     <select id="getSelectedCoursesIds" resultType="java.lang.String">
         select distinct course_id from spm_courses_select where student_id = #{identification}
     </select>
+
+    <select id="selectStudentIdByCourseId" resultType="java.lang.String">
+        select student_id from spm_courses_select where course_id = #{courseId}
+    </select>
 </mapper>

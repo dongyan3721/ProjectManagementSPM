@@ -149,4 +149,12 @@ export function download(url, params, filename, config) {
   })
 }
 
+// 解析文件扩展名
+const parseFileExtend = (filename)=>{
+  let split = filename.split(".")
+  return split[split.length-1]
+}
+
+export {parseFileExtend}
+
 export default service

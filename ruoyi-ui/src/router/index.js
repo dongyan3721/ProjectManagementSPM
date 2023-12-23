@@ -186,7 +186,16 @@ export const dynamicRoutes = [
         path: 'index/:courseId',
         component: ()=>import("../views/spm/teacher/course-detail/LeadCourseDetail.vue"),
         name: 'MyCourseDetail',
-        meta: {title: '课程详情', activeMenu: '/spm/teacher-detail'}
+        meta: {title: '课程详情', activeMenu: '/spm/teacher-detail', showFather: false},
+        children: [
+          {
+            path: 'homeworkIndex/:homeworkIndex',
+            name: 'HomeworkDetail',
+            permission: [],
+            meta: {title: '作业详情',  showFather: false},
+            component: ()=>import("../views/spm/teacher/course-detail/homework/TeacherHomework")
+          }
+        ]
       }
     ]
   }

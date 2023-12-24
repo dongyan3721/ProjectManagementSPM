@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.spm.mapper.SpmCourseChapterMapper">
+    
+    <resultMap type="SpmCourseChapter" id="SpmCourseChapterResult">
+        <result property="id"    column="id"    />
+        <result property="courseId"    column="course_id"    />
+        <result property="chapterName"    column="chapter_name"    />
+        <result property="priority"    column="priority"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectSpmCourseChapterVo">
+        select id, course_id, chapter_name, priority, del_flag, create_by, create_time, update_by, update_time from spm_course_chapter
+    </sql>
+
+    <select id="selectSpmCourseChapterList" parameterType="SpmCourseChapter" resultMap="SpmCourseChapterResult">
+        <include refid="selectSpmCourseChapterVo"/>
+        <where>  
+            <if test="courseId != null  and courseId != ''"> and course_id = #{courseId}</if>
+            <if test="chapterName != null  and chapterName != ''"> and chapter_name like concat('%', #{chapterName}, '%')</if>
+            <if test="priority != null "> and priority = #{priority}</if>
+        </where>
+    </select>
+    
+    <select id="selectSpmCourseChapterById" parameterType="String" resultMap="SpmCourseChapterResult">
+        <include refid="selectSpmCourseChapterVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSpmCourseChapter" parameterType="SpmCourseChapter">
+        insert into spm_course_chapter
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="courseId != null and courseId != ''">course_id,</if>
+            <if test="chapterName != null and chapterName != ''">chapter_name,</if>
+            <if test="priority != null">priority,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="courseId != null and courseId != ''">#{courseId},</if>
+            <if test="chapterName != null and chapterName != ''">#{chapterName},</if>
+            <if test="priority != null">#{priority},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSpmCourseChapter" parameterType="SpmCourseChapter">
+        update spm_course_chapter
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="courseId != null and courseId != ''">course_id = #{courseId},</if>
+            <if test="chapterName != null and chapterName != ''">chapter_name = #{chapterName},</if>
+            <if test="priority != null">priority = #{priority},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSpmCourseChapterById" parameterType="String">
+        delete from spm_course_chapter where id = #{id}
+    </delete>
+
+    <delete id="deleteSpmCourseChapterByIds" parameterType="String">
+        delete from spm_course_chapter where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

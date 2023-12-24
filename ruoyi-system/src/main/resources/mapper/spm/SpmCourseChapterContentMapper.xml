@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.spm.mapper.SpmCourseChapterContentMapper">
+    
+    <resultMap type="SpmCourseChapterContent" id="SpmCourseChapterContentResult">
+        <result property="id"    column="id"    />
+        <result property="captchaId"    column="captcha_id"    />
+        <result property="description"    column="description"    />
+        <result property="fileLink"    column="file_link"    />
+        <result property="priority"    column="priority"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectSpmCourseChapterContentVo">
+        select id, captcha_id, description, file_link, priority, del_flag, create_by, create_time, update_by, update_time from spm_course_chapter_content
+    </sql>
+
+    <select id="selectSpmCourseChapterContentList" parameterType="SpmCourseChapterContent" resultMap="SpmCourseChapterContentResult">
+        <include refid="selectSpmCourseChapterContentVo"/>
+        <where>  
+            <if test="captchaId != null  and captchaId != ''"> and captcha_id = #{captchaId}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="fileLink != null  and fileLink != ''"> and file_link = #{fileLink}</if>
+            <if test="priority != null "> and priority = #{priority}</if>
+        </where>
+    </select>
+    
+    <select id="selectSpmCourseChapterContentById" parameterType="String" resultMap="SpmCourseChapterContentResult">
+        <include refid="selectSpmCourseChapterContentVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSpmCourseChapterContent" parameterType="SpmCourseChapterContent">
+        insert into spm_course_chapter_content
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="captchaId != null and captchaId != ''">captcha_id,</if>
+            <if test="description != null">description,</if>
+            <if test="fileLink != null">file_link,</if>
+            <if test="priority != null">priority,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="captchaId != null and captchaId != ''">#{captchaId},</if>
+            <if test="description != null">#{description},</if>
+            <if test="fileLink != null">#{fileLink},</if>
+            <if test="priority != null">#{priority},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSpmCourseChapterContent" parameterType="SpmCourseChapterContent">
+        update spm_course_chapter_content
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="captchaId != null and captchaId != ''">captcha_id = #{captchaId},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="fileLink != null">file_link = #{fileLink},</if>
+            <if test="priority != null">priority = #{priority},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSpmCourseChapterContentById" parameterType="String">
+        delete from spm_course_chapter_content where id = #{id}
+    </delete>
+
+    <delete id="deleteSpmCourseChapterContentByIds" parameterType="String">
+        delete from spm_course_chapter_content where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

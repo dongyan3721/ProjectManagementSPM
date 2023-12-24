@@ -3,13 +3,16 @@ import {queryDetailedLeadCourseInfo} from "@/api/spm/teacher-leadcoursedetail";
 import {querySatisfiedHomework, insertNewHomework} from "@/api/spm/teacher-homework";
 import SingleHomework from "@/components/Spm/SingleHomework";
 import {parseTime} from "@/utils/ruoyi";
+import SignListItem from "@/components/Spm/SignListItem";
+import {publishNewSign, querySatisfiedPublishedSign} from "@/api/spm/teacher-sign";
+import {getCurrentTimeYYYYmmDDHHmmSS} from "@/utils/dongyan";
 
 export default {
   name: "LeadCourseDetail",
-  components: {SingleHomework},
+  components: {SingleHomework, SignListItem},
   data(){
     return {
-      activeName: 'chapter',
+      activeName: 'sign',
       courseInfo: {},
       homeworkList: [],
 
@@ -19,6 +22,10 @@ export default {
       formRule: {},
       fileContent: null,
       dynamicLoadHomeworkKey: 0,
+      addSignVis: false,
+      signForm: {},
+      publishedSignAvailable: [],
+      publishedSignDeprecated: [],
 
 
       isFormVisible: false,
@@ -82,14 +89,45 @@ export default {
         this.$modal.msgSuccess("新增成功！");
         ++this.dynamicLoadHomeworkKey;
         this.addDialogVis = false;
+        this.selectPublishedHomework();
       }).catch(err=>console.log(err))
     },
     cancelSubmit(){
       this.resetForm("form");
       this.addDialogVis = false;
     },
-
-
+    addNewSign(){
+      this.addSignVis = true;
+      this.resetForm("signForm")
+    },
+    handleSignSubmit(){
+      this.signForm.courseId = this.$route.params.courseId;
+      publishNewSign(this.signForm).then(res=>{
+        this.$modal.msgSuccess("新增成功！")
+        this.requestThisCourseAllSign()
+        this.addSignVis = false;
+        this.resetForm("signForm")
+        this.requestThisCourseAllSign()
+      })
+    },
+    cancelSignSubmit(){
+      this.addSignVis = false;
+      this.resetForm("signForm")
+    },
+    gotoSignDetail(id){
+      this.$router.push(`/spm/teacher-detail/index/${this.$route.params.courseId}/signIndex/${id}`)
+    },
+    requestThisCourseAllSign(){
+      querySatisfiedPublishedSign({courseId: this.$route.params.courseId}).then(res=>{
+        let publishedSign = res.rows
+        let now = getCurrentTimeYYYYmmDDHHmmSS();
+        this.publishedSignAvailable = []
+        this.publishedSignDeprecated = []
+        publishedSign.map(item=>{
+          item.endTime<now?this.publishedSignDeprecated.push(item):this.publishedSignAvailable.push(item)
+        })
+      })
+    },
 
 
     showDialog() {
@@ -120,19 +158,20 @@ export default {
 
 
 
-
-
-
-
-
   created() {
     this.selectDetailedCourseInformation();
     this.selectPublishedHomework();
+    this.requestThisCourseAllSign()
     document.body.style.cursor = "default";
     this.form = {
       courseId: null,
       title: null,
       content: null,
+      beginTime: null,
+      endTime: null
+    }
+    this.signForm = {
+      courseId: null,
       beginTime: null,
       endTime: null
     }
@@ -195,220 +234,233 @@ export default {
         </el-form-item>
       </el-form>
     </el-dialog>
-
+    <el-dialog :visible.sync="addSignVis" title="发布新签到" append-to-body width="400px">
+      <el-form :model="signForm" ref="signForm" :inline="true">
+        <el-form-item label="开始时间">
+          <el-date-picker type="datetime" value-format="yyyy-MM-dd HH:mm:SS" v-model="signForm.beginTime" placeholder="请选择开始时间"/>
+        </el-form-item>
+        <el-form-item label="结束时间">
+          <el-date-picker type="datetime" value-format="yyyy-MM-dd HH:mm:SS" v-model="signForm.endTime" placeholder="请选择结束时间"/>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" size="small" @click="handleSignSubmit">确认</el-button>
+          <el-button type="danger" size="small" @click="cancelSignSubmit">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
 
 
 
 
     <el-tabs v-model="activeName" type="border-card" @tab-click="handleTabsClick" class="body-main-tabs">
-      <el-tab-pane label="章节完善" name="chapter">
+<!--      <el-tab-pane label="章节完善" name="chapter">-->
 
-        <el-button @click="showDialog" type="danger">添加章节</el-button>
+<!--        <el-button @click="showDialog" type="danger">添加章节</el-button>-->
 
-        <el-dialog :visible="isFormVisible" @close="close" title="章节完善" width="50%">
-          <el-form :model="formData" :rules="rules" ref="elForm" label-position="top">
-            <el-form-item label="章节名称" prop="field104">
-              <el-input v-model="formData.field104" placeholder="请输入章节名称"></el-input>
-            </el-form-item>
+<!--        <el-dialog :visible="isFormVisible" @close="close" title="章节完善" width="50%">-->
+<!--          <el-form :model="formData" :rules="rules" ref="elForm" label-position="top">-->
+<!--            <el-form-item label="章节名称" prop="field104">-->
+<!--              <el-input v-model="formData.field104" placeholder="请输入章节名称"></el-input>-->
+<!--            </el-form-item>-->
 
-            <el-form-item label="章节描述" prop="field102">
-              <el-input
-                v-model="formData.field102"
-                type="textarea"
-                placeholder="请输入章节描述"
-                :rows="4"
-              ></el-input>
-            </el-form-item>
+<!--            <el-form-item label="章节描述" prop="field102">-->
+<!--              <el-input-->
+<!--                v-model="formData.field102"-->
+<!--                type="textarea"-->
+<!--                placeholder="请输入章节描述"-->
+<!--                :rows="4"-->
+<!--              ></el-input>-->
+<!--            </el-form-item>-->
 
-            <el-form-item label="上传" prop="field103">
-              <el-upload
-                ref="field103"
-                :file-list="field103fileList"
-                :action="field103Action"
-                :before-upload="field103BeforeUpload"
-                list-type="picture-card"
-              >
-                <i class="el-icon-plus"></i>
-              </el-upload>
-            </el-form-item>
-          </el-form>
+<!--            <el-form-item label="上传" prop="field103">-->
+<!--              <el-upload-->
+<!--                ref="field103"-->
+<!--                :file-list="field103fileList"-->
+<!--                :action="field103Action"-->
+<!--                :before-upload="field103BeforeUpload"-->
+<!--                list-type="picture-card"-->
+<!--              >-->
+<!--                <i class="el-icon-plus"></i>-->
+<!--              </el-upload>-->
+<!--            </el-form-item>-->
+<!--          </el-form>-->
 
-          <div slot="footer">
-            <el-button @click="close">取消</el-button>
-            <el-button type="primary" @click="handleConfirm">确定</el-button>
-          </div>
-        </el-dialog>
+<!--          <div slot="footer">-->
+<!--            <el-button @click="close">取消</el-button>-->
+<!--            <el-button type="primary" @click="handleConfirm">确定</el-button>-->
+<!--          </div>-->
+<!--        </el-dialog>-->
 
 
 
-        <div class="chapter-list">
-          <el-collapse>
-            <!-- 第一章 - 绪论 -->
-            <template>
-              <div>
-                <el-collapse v-model="activeCollapse">
-                  <el-collapse-item title="第一章 - 绪论">
-                    <ul>
-                      <li><a @click="openDialog('xulun.pptx')" href="#">课件 查看文件</a></li>
-                      <!-- 其他链接 -->
-                    </ul>
-                  </el-collapse-item>
-                </el-collapse>
+<!--        <div class="chapter-list">-->
+<!--          <el-collapse>-->
+<!--            &lt;!&ndash; 第一章 - 绪论 &ndash;&gt;-->
+<!--            <template>-->
+<!--              <div>-->
+<!--                <el-collapse v-model="activeCollapse">-->
+<!--                  <el-collapse-item title="第一章 - 绪论">-->
+<!--                    <ul>-->
+<!--                      <li><a @click="openDialog('xulun.pptx')" href="#">课件 查看文件</a></li>-->
+<!--                      &lt;!&ndash; 其他链接 &ndash;&gt;-->
+<!--                    </ul>-->
+<!--                  </el-collapse-item>-->
+<!--                </el-collapse>-->
 
-                <el-dialog :visible="isDialogVisible" @close="closeDialog" title="课件 PPT">
-                  <iframe :src="pdfPath" style="width: 100%; height: 500px;"></iframe>
-                </el-dialog>
-              </div>
-            </template>
+<!--                <el-dialog :visible="isDialogVisible" @close="closeDialog" title="课件 PPT">-->
+<!--                  <iframe :src="pdfPath" style="width: 100%; height: 500px;"></iframe>-->
+<!--                </el-dialog>-->
+<!--              </div>-->
+<!--            </template>-->
 
-            <!-- 第二章 - 项目初始 -->
-            <el-collapse-item title="第二章 - 项目初始">
-              <ul>
-                <li><a :href="initialProject" target="_blank">第二章项目初始 查看文件</a></li>
-                <li>
-                  <a :href="exercisePersonal" target="_blank">
-                    课后练习，个人完成
-                    <span v-if="exerciseExpired">已过期</span>
-                    <span v-if="exerciseSubmitted">已交</span>
-                    <span>作业交付截止 {{ exerciseDeadline }}</span>
-                  </a>
-                </li>
-              </ul>
-            </el-collapse-item>
+<!--            &lt;!&ndash; 第二章 - 项目初始 &ndash;&gt;-->
+<!--            <el-collapse-item title="第二章 - 项目初始">-->
+<!--              <ul>-->
+<!--                <li><a :href="initialProject" target="_blank">第二章项目初始 查看文件</a></li>-->
+<!--                <li>-->
+<!--                  <a :href="exercisePersonal" target="_blank">-->
+<!--                    课后练习，个人完成-->
+<!--                    <span v-if="exerciseExpired">已过期</span>-->
+<!--                    <span v-if="exerciseSubmitted">已交</span>-->
+<!--                    <span>作业交付截止 {{ exerciseDeadline }}</span>-->
+<!--                  </a>-->
+<!--                </li>-->
+<!--              </ul>-->
+<!--            </el-collapse-item>-->
 
-            <!-- 第三章 - 生存期模型 -->
-            <el-collapse-item title="第三章 - 生存期模型">
-              <ul>
-                <li><a :href="lifeModel" target="_blank">生存期模型 查看文件</a></li>
-              </ul>
-            </el-collapse-item>
+<!--            &lt;!&ndash; 第三章 - 生存期模型 &ndash;&gt;-->
+<!--            <el-collapse-item title="第三章 - 生存期模型">-->
+<!--              <ul>-->
+<!--                <li><a :href="lifeModel" target="_blank">生存期模型 查看文件</a></li>-->
+<!--              </ul>-->
+<!--            </el-collapse-item>-->
 
-            <!-- 第四章 - 范围计划 -->
-            <el-collapse-item title="第四章 - 范围计划">
-              <ul>
-                <li><a :href="scopePlanPpt" target="_blank">课件 查看文件</a></li>
-                <li>
-                  <a :href="projectWbs" target="_blank">
-                    某个项目的WBS，个人提交
-                    <span v-if="wbsExpired">已过期</span>
-                    <span v-if="wbsSubmitted">已交</span>
-                    <span>作业交付截止 {{ wbsDeadline }}</span>
-                  </a>
-                </li>
-                <li>
-                  <a :href="weeklyReport1" target="_blank">
-                    第一次周报，以小组为单位提交
-                    <span v-if="weeklyReport1Expired">已过期</span>
-                    <span>作业交付截止 {{ weeklyReport1Deadline }}</span>
-                  </a>
-                </li>
-              </ul>
-            </el-collapse-item>
+<!--            &lt;!&ndash; 第四章 - 范围计划 &ndash;&gt;-->
+<!--            <el-collapse-item title="第四章 - 范围计划">-->
+<!--              <ul>-->
+<!--                <li><a :href="scopePlanPpt" target="_blank">课件 查看文件</a></li>-->
+<!--                <li>-->
+<!--                  <a :href="projectWbs" target="_blank">-->
+<!--                    某个项目的WBS，个人提交-->
+<!--                    <span v-if="wbsExpired">已过期</span>-->
+<!--                    <span v-if="wbsSubmitted">已交</span>-->
+<!--                    <span>作业交付截止 {{ wbsDeadline }}</span>-->
+<!--                  </a>-->
+<!--                </li>-->
+<!--                <li>-->
+<!--                  <a :href="weeklyReport1" target="_blank">-->
+<!--                    第一次周报，以小组为单位提交-->
+<!--                    <span v-if="weeklyReport1Expired">已过期</span>-->
+<!--                    <span>作业交付截止 {{ weeklyReport1Deadline }}</span>-->
+<!--                  </a>-->
+<!--                </li>-->
+<!--              </ul>-->
+<!--            </el-collapse-item>-->
 
-            <!-- 第六章 - 成本计划 -->
-            <el-collapse-item title="第六章 - 成本计划">
-              <ul>
-                <li><a :href="costPlanPpt" target="_blank">成本计划 查看文件</a></li>
-                <li>
-                  <a :href="weeklyReport2" target="_blank">
-                    第二次周报 内容 成本计划 以小组为单位提交
-                    <span v-if="weeklyReport2Expired">已过期</span>
-                    <span>作业交付截止 {{ weeklyReport2Deadline }}</span>
-                  </a>
-                </li>
-              </ul>
-            </el-collapse-item>
+<!--            &lt;!&ndash; 第六章 - 成本计划 &ndash;&gt;-->
+<!--            <el-collapse-item title="第六章 - 成本计划">-->
+<!--              <ul>-->
+<!--                <li><a :href="costPlanPpt" target="_blank">成本计划 查看文件</a></li>-->
+<!--                <li>-->
+<!--                  <a :href="weeklyReport2" target="_blank">-->
+<!--                    第二次周报 内容 成本计划 以小组为单位提交-->
+<!--                    <span v-if="weeklyReport2Expired">已过期</span>-->
+<!--                    <span>作业交付截止 {{ weeklyReport2Deadline }}</span>-->
+<!--                  </a>-->
+<!--                </li>-->
+<!--              </ul>-->
+<!--            </el-collapse-item>-->
 
-            <!-- 第七章 - 进度计划 -->
-            <el-collapse-item title="第七章 - 进度计划">
-              <ul>
-                <li><a :href="schedulePlanPpt" target="_blank">课件 查看文件</a></li>
-                <li>
-                  <a :href="weeklyReport3" target="_blank">
-                    第三周周报 进度计划 以小组为单位提交
-                    <span v-if="weeklyReport3Expired">已过期</span>
-                    <span>作业交付截止 {{ weeklyReport3Deadline }}</span>
-                  </a>
-                </li>
-              </ul>
-            </el-collapse-item>
+<!--            &lt;!&ndash; 第七章 - 进度计划 &ndash;&gt;-->
+<!--            <el-collapse-item title="第七章 - 进度计划">-->
+<!--              <ul>-->
+<!--                <li><a :href="schedulePlanPpt" target="_blank">课件 查看文件</a></li>-->
+<!--                <li>-->
+<!--                  <a :href="weeklyReport3" target="_blank">-->
+<!--                    第三周周报 进度计划 以小组为单位提交-->
+<!--                    <span v-if="weeklyReport3Expired">已过期</span>-->
+<!--                    <span>作业交付截止 {{ weeklyReport3Deadline }}</span>-->
+<!--                  </a>-->
+<!--                </li>-->
+<!--              </ul>-->
+<!--            </el-collapse-item>-->
 
-            <!-- 第八章 - 质量计划 -->
-            <el-collapse-item title="第八章 - 质量计划">
-              <ul>
-                <li><a :href="qualityPlanPpt" target="_blank">课件 查看文件</a></li>
-              </ul>
-            </el-collapse-item>
+<!--            &lt;!&ndash; 第八章 - 质量计划 &ndash;&gt;-->
+<!--            <el-collapse-item title="第八章 - 质量计划">-->
+<!--              <ul>-->
+<!--                <li><a :href="qualityPlanPpt" target="_blank">课件 查看文件</a></li>-->
+<!--              </ul>-->
+<!--            </el-collapse-item>-->
 
-            <!-- 第九章 - 配置管理计划 -->
-            <el-collapse-item title="第九章 - 配置管理计划">
-              <ul>
-                <li><a :href="configPlanPpt" target="_blank">课件 查看文件</a></li>
-                <li>
-                  <a :href="configItemRules" target="_blank">
-                    关于配置项版本号规则
-                    <span v-if="configRulesExpired">已过期</span>
-                    <span v-if="configRulesSubmitted">已作答</span>
-                    <span>测试截止时间 {{ configRulesDeadline }}</span>
-                  </a>
-                </li>
-              </ul>
-            </el-collapse-item>
+<!--            &lt;!&ndash; 第九章 - 配置管理计划 &ndash;&gt;-->
+<!--            <el-collapse-item title="第九章 - 配置管理计划">-->
+<!--              <ul>-->
+<!--                <li><a :href="configPlanPpt" target="_blank">课件 查看文件</a></li>-->
+<!--                <li>-->
+<!--                  <a :href="configItemRules" target="_blank">-->
+<!--                    关于配置项版本号规则-->
+<!--                    <span v-if="configRulesExpired">已过期</span>-->
+<!--                    <span v-if="configRulesSubmitted">已作答</span>-->
+<!--                    <span>测试截止时间 {{ configRulesDeadline }}</span>-->
+<!--                  </a>-->
+<!--                </li>-->
+<!--              </ul>-->
+<!--            </el-collapse-item>-->
 
-            <!-- 第十一章 - 风险计划 -->
-            <el-collapse-item title="第十一章 - 风险计划">
-              <ul>
-                <li><a :href="riskPlanPpt" target="_blank">课件 查看文件</a></li>
-                <li>
-                  <a :href="riskExercise" target="_blank">
-                    课后习题第四大题第二小题
-                    <span v-if="riskExerciseExpired">已过期</span>
-                    <span v-if="riskExerciseSubmitted">已交</span>
-                    <span>作业交付截止 {{ riskExerciseDeadline }}</span>
-                  </a>
-                </li>
-              </ul>
-            </el-collapse-item>
+<!--            &lt;!&ndash; 第十一章 - 风险计划 &ndash;&gt;-->
+<!--            <el-collapse-item title="第十一章 - 风险计划">-->
+<!--              <ul>-->
+<!--                <li><a :href="riskPlanPpt" target="_blank">课件 查看文件</a></li>-->
+<!--                <li>-->
+<!--                  <a :href="riskExercise" target="_blank">-->
+<!--                    课后习题第四大题第二小题-->
+<!--                    <span v-if="riskExerciseExpired">已过期</span>-->
+<!--                    <span v-if="riskExerciseSubmitted">已交</span>-->
+<!--                    <span>作业交付截止 {{ riskExerciseDeadline }}</span>-->
+<!--                  </a>-->
+<!--                </li>-->
+<!--              </ul>-->
+<!--            </el-collapse-item>-->
 
-            <!-- 第十二、十三章 - 课件 -->
-            <el-collapse-item title="第十二、十三章">
-              <ul>
-                <li><a :href="chapters1213Ppt" target="_blank">课件 查看文件</a></li>
-              </ul>
-            </el-collapse-item>
+<!--            &lt;!&ndash; 第十二、十三章 - 课件 &ndash;&gt;-->
+<!--            <el-collapse-item title="第十二、十三章">-->
+<!--              <ul>-->
+<!--                <li><a :href="chapters1213Ppt" target="_blank">课件 查看文件</a></li>-->
+<!--              </ul>-->
+<!--            </el-collapse-item>-->
 
-            <!-- 第十章 - 团队计划 -->
-            <el-collapse-item title="第十章 - 团队计划">
-              <ul>
-                <li><a :href="teamPlanPpt" target="_blank">课件 查看文件</a></li>
-              </ul>
-            </el-collapse-item>
+<!--            &lt;!&ndash; 第十章 - 团队计划 &ndash;&gt;-->
+<!--            <el-collapse-item title="第十章 - 团队计划">-->
+<!--              <ul>-->
+<!--                <li><a :href="teamPlanPpt" target="_blank">课件 查看文件</a></li>-->
+<!--              </ul>-->
+<!--            </el-collapse-item>-->
 
-            <!-- 第十四章 - 课件 -->
-            <el-collapse-item title="第十四章">
-              <ul>
-                <li><a :href="chapter14Ppt" target="_blank">课件 查看文件</a></li>
-              </ul>
-            </el-collapse-item>
+<!--            &lt;!&ndash; 第十四章 - 课件 &ndash;&gt;-->
+<!--            <el-collapse-item title="第十四章">-->
+<!--              <ul>-->
+<!--                <li><a :href="chapter14Ppt" target="_blank">课件 查看文件</a></li>-->
+<!--              </ul>-->
+<!--            </el-collapse-item>-->
 
-            <!-- 第十五、十六章 - 课件 -->
-            <el-collapse-item title="第十五、十六章">
-              <ul>
-                <li><a :href="chapters1516Ppt" target="_blank">课件 查看文件</a></li>
-              </ul>
-            </el-collapse-item>
+<!--            &lt;!&ndash; 第十五、十六章 - 课件 &ndash;&gt;-->
+<!--            <el-collapse-item title="第十五、十六章">-->
+<!--              <ul>-->
+<!--                <li><a :href="chapters1516Ppt" target="_blank">课件 查看文件</a></li>-->
+<!--              </ul>-->
+<!--            </el-collapse-item>-->
 
-            <!-- 最终章 - 报告要求 -->
-            <el-collapse-item title="最终章 - 报告要求">
-              <ul>
-                <li><a :href="finalReportRequirements" target="_blank">报告要求 查看文件</a></li>
-              </ul>
-            </el-collapse-item>
+<!--            &lt;!&ndash; 最终章 - 报告要求 &ndash;&gt;-->
+<!--            <el-collapse-item title="最终章 - 报告要求">-->
+<!--              <ul>-->
+<!--                <li><a :href="finalReportRequirements" target="_blank">报告要求 查看文件</a></li>-->
+<!--              </ul>-->
+<!--            </el-collapse-item>-->
 
-          </el-collapse>
-        </div>
+<!--          </el-collapse>-->
+<!--        </div>-->
 
-      </el-tab-pane>
+<!--      </el-tab-pane>-->
       <el-tab-pane label="发布课程作业" name="homework">
         <el-row>
           <el-col :span="3">
@@ -423,7 +475,37 @@ export default {
                           :all="7" :hand-on="4" :key="homework.id"></SingleHomework>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="点名" name="sign">角色管理</el-tab-pane>
+      <el-tab-pane label="点名" name="sign">
+        <el-row>
+          <el-col :span="3">
+            <el-button type="danger" size="medium" @click="addNewSign">
+              新增签到
+            </el-button>
+          </el-col>
+        </el-row>
+        <div class="on-doing-task">
+          <h2>进行中</h2>
+          <div class="sign-info">
+            <SignListItem v-for="item in publishedSignAvailable"
+                                    :id = item.id
+                                    :snapshot="`${item.beginTime}-${item.endTime}`"
+                                    :deprecated="false"
+                                    :key="item.id"
+                                    @idClick="gotoSignDetail"/>
+          </div>
+        </div>
+        <div class="deprecated">
+          <h2>已结束</h2>
+          <div class="sign-info">
+            <SignListItem v-for="item in publishedSignDeprecated"
+                                    :id = item.id
+                                    :snapshot="`${item.beginTime}-${item.endTime}`"
+                                    :deprecated="true"
+                                    :key="item.id"
+                                    @idClick="gotoSignDetail"/>
+          </div>
+        </div>
+      </el-tab-pane>
       <el-tab-pane label="考试" name="exam">定时任务补偿</el-tab-pane>
       <el-tab-pane label="本班学生" name="classmates">
         <div class="whole">

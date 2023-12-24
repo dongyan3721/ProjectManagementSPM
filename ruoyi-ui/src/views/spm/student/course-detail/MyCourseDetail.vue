@@ -11,6 +11,11 @@ export default {
       activeName: 'chapter',
       // 页面初始化的时候会向后端获取本课程的所有信息
       courseInfo: {},
+
+      activeCollapse: ['1'],
+      isDialogVisible: false,
+      pdfPath: '',
+
       publishedSignAvailable: [],
       publishedSignDeprecated: [],
     }
@@ -53,7 +58,15 @@ export default {
           item.endTime<now?this.publishedSignDeprecated.push(item):this.publishedSignAvailable.push(item)
         })
       })
-    }
+    },
+    openDialog(pdfFileName) {
+      this.isDialogVisible = true;
+      this.pdfPath = `/public/${pdfFileName}`;
+    },
+    closeDialog() {
+      this.isDialogVisible = false;
+    },
+
   },
   created() {
     this.selectDetailedCourseInformation();
@@ -66,7 +79,177 @@ export default {
 <template>
   <div class="container-wrapper">
     <el-tabs v-model="activeName" type="border-card" @tab-click="handleTabsClick" class="body-main-tabs">
-      <el-tab-pane label="章节" name="chapter">用户管理</el-tab-pane>
+      <el-tab-pane label="章节" name="chapter">
+
+
+        <div class="chapter-list">
+          <el-collapse>
+            <!-- 第一章 - 绪论 -->
+            <template>
+              <div>
+                <el-collapse v-model="activeCollapse">
+                  <el-collapse-item title="第一章 - 绪论">
+                    <ul>
+                      <li><a @click="openDialog('xulun.pptx')" href="#">课件 查看文件</a></li>
+                      <!-- 其他链接 -->
+                    </ul>
+                  </el-collapse-item>
+                </el-collapse>
+
+                <el-dialog :visible="isDialogVisible" @close="closeDialog" title="课件 PPT">
+                  <iframe :src="pdfPath" style="width: 100%; height: 500px;"></iframe>
+                </el-dialog>
+              </div>
+            </template>
+
+            <!-- 第二章 - 项目初始 -->
+            <el-collapse-item title="第二章 - 项目初始">
+              <ul>
+                <li><a :href="initialProject" target="_blank">第二章项目初始 查看文件</a></li>
+                <li>
+                  <a :href="exercisePersonal" target="_blank">
+                    课后练习，个人完成
+                    <span v-if="exerciseExpired">已过期</span>
+                    <span v-if="exerciseSubmitted">已交</span>
+                    <span>作业交付截止 {{ exerciseDeadline }}</span>
+                  </a>
+                </li>
+              </ul>
+            </el-collapse-item>
+
+            <!-- 第三章 - 生存期模型 -->
+            <el-collapse-item title="第三章 - 生存期模型">
+              <ul>
+                <li><a :href="lifeModel" target="_blank">生存期模型 查看文件</a></li>
+              </ul>
+            </el-collapse-item>
+
+            <!-- 第四章 - 范围计划 -->
+            <el-collapse-item title="第四章 - 范围计划">
+              <ul>
+                <li><a :href="scopePlanPpt" target="_blank">课件 查看文件</a></li>
+                <li>
+                  <a :href="projectWbs" target="_blank">
+                    某个项目的WBS，个人提交
+                    <span v-if="wbsExpired">已过期</span>
+                    <span v-if="wbsSubmitted">已交</span>
+                    <span>作业交付截止 {{ wbsDeadline }}</span>
+                  </a>
+                </li>
+                <li>
+                  <a :href="weeklyReport1" target="_blank">
+                    第一次周报，以小组为单位提交
+                    <span v-if="weeklyReport1Expired">已过期</span>
+                    <span>作业交付截止 {{ weeklyReport1Deadline }}</span>
+                  </a>
+                </li>
+              </ul>
+            </el-collapse-item>
+
+            <!-- 第六章 - 成本计划 -->
+            <el-collapse-item title="第六章 - 成本计划">
+              <ul>
+                <li><a :href="costPlanPpt" target="_blank">成本计划 查看文件</a></li>
+                <li>
+                  <a :href="weeklyReport2" target="_blank">
+                    第二次周报 内容 成本计划 以小组为单位提交
+                    <span v-if="weeklyReport2Expired">已过期</span>
+                    <span>作业交付截止 {{ weeklyReport2Deadline }}</span>
+                  </a>
+                </li>
+              </ul>
+            </el-collapse-item>
+
+            <!-- 第七章 - 进度计划 -->
+            <el-collapse-item title="第七章 - 进度计划">
+              <ul>
+                <li><a :href="schedulePlanPpt" target="_blank">课件 查看文件</a></li>
+                <li>
+                  <a :href="weeklyReport3" target="_blank">
+                    第三周周报 进度计划 以小组为单位提交
+                    <span v-if="weeklyReport3Expired">已过期</span>
+                    <span>作业交付截止 {{ weeklyReport3Deadline }}</span>
+                  </a>
+                </li>
+              </ul>
+            </el-collapse-item>
+
+            <!-- 第八章 - 质量计划 -->
+            <el-collapse-item title="第八章 - 质量计划">
+              <ul>
+                <li><a :href="qualityPlanPpt" target="_blank">课件 查看文件</a></li>
+              </ul>
+            </el-collapse-item>
+
+            <!-- 第九章 - 配置管理计划 -->
+            <el-collapse-item title="第九章 - 配置管理计划">
+              <ul>
+                <li><a :href="configPlanPpt" target="_blank">课件 查看文件</a></li>
+                <li>
+                  <a :href="configItemRules" target="_blank">
+                    关于配置项版本号规则
+                    <span v-if="configRulesExpired">已过期</span>
+                    <span v-if="configRulesSubmitted">已作答</span>
+                    <span>测试截止时间 {{ configRulesDeadline }}</span>
+                  </a>
+                </li>
+              </ul>
+            </el-collapse-item>
+
+            <!-- 第十一章 - 风险计划 -->
+            <el-collapse-item title="第十一章 - 风险计划">
+              <ul>
+                <li><a :href="riskPlanPpt" target="_blank">课件 查看文件</a></li>
+                <li>
+                  <a :href="riskExercise" target="_blank">
+                    课后习题第四大题第二小题
+                    <span v-if="riskExerciseExpired">已过期</span>
+                    <span v-if="riskExerciseSubmitted">已交</span>
+                    <span>作业交付截止 {{ riskExerciseDeadline }}</span>
+                  </a>
+                </li>
+              </ul>
+            </el-collapse-item>
+
+            <!-- 第十二、十三章 - 课件 -->
+            <el-collapse-item title="第十二、十三章">
+              <ul>
+                <li><a :href="chapters1213Ppt" target="_blank">课件 查看文件</a></li>
+              </ul>
+            </el-collapse-item>
+
+            <!-- 第十章 - 团队计划 -->
+            <el-collapse-item title="第十章 - 团队计划">
+              <ul>
+                <li><a :href="teamPlanPpt" target="_blank">课件 查看文件</a></li>
+              </ul>
+            </el-collapse-item>
+
+            <!-- 第十四章 - 课件 -->
+            <el-collapse-item title="第十四章">
+              <ul>
+                <li><a :href="chapter14Ppt" target="_blank">课件 查看文件</a></li>
+              </ul>
+            </el-collapse-item>
+
+            <!-- 第十五、十六章 - 课件 -->
+            <el-collapse-item title="第十五、十六章">
+              <ul>
+                <li><a :href="chapters1516Ppt" target="_blank">课件 查看文件</a></li>
+              </ul>
+            </el-collapse-item>
+
+            <!-- 最终章 - 报告要求 -->
+            <el-collapse-item title="最终章 - 报告要求">
+              <ul>
+                <li><a :href="finalReportRequirements" target="_blank">报告要求 查看文件</a></li>
+              </ul>
+            </el-collapse-item>
+
+          </el-collapse>
+        </div>
+
+      </el-tab-pane>
       <el-tab-pane label="作业" name="homework">配置管理</el-tab-pane>
       <el-tab-pane label="点名" name="sign">
         <div class="on-doing-task">

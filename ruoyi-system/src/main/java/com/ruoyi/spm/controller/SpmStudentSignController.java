@@ -10,10 +10,7 @@ import com.ruoyi.spm.service.ISpmSignRecordService;
 import com.ruoyi.spm.service.ISpmSignService;
 import com.ruoyi.spm.service.ISpmStudentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/spm/student-sign")
@@ -56,9 +53,11 @@ public class SpmStudentSignController extends BaseController {
      * 前台不封装学生信息，这里手动用SecurityUtil加上
      */
     @PostMapping("add/sign-record")
-    public AjaxResult studentAddNewSignRecord(SpmSignRecord spmSignRecord){
+    public AjaxResult studentAddNewSignRecord(@RequestBody SpmSignRecord spmSignRecord){
         SpmSign sign = spmSignService.selectSpmSignById(spmSignRecord.getSignId());
         // 签到时间在截止时间之前
+        System.out.println(sign.getEndTime());
+        System.out.println(spmSignRecord.getSignTime());
         if(sign.getEndTime().compareTo(spmSignRecord.getSignTime())>0){
             String studentId = SecurityUtils.getUsername();
             spmSignRecord.setStudentId(studentId);

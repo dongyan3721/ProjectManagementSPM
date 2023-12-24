@@ -77,7 +77,7 @@ public class SpmTeacherSignController extends BaseController {
      * @param spmSign 记录
      */
     @PostMapping("/sign/add")
-    public AjaxResult publishNewSign(SpmSign spmSign){
+    public AjaxResult publishNewSign(@RequestBody SpmSign spmSign){
         return toAjax(spmSignService.insertSpmSign(spmSign));
     }
 
@@ -86,7 +86,7 @@ public class SpmTeacherSignController extends BaseController {
      * @param spmSignRecord 记录
      */
     @PostMapping("/sign-record/add")
-    public AjaxResult pushNewStudentSignRecord(SpmSignRecord spmSignRecord){
+    public AjaxResult pushNewStudentSignRecord(@RequestBody SpmSignRecord spmSignRecord){
         return toAjax(spmSignRecordService.insertSpmSignRecord(spmSignRecord));
     }
 
@@ -94,8 +94,8 @@ public class SpmTeacherSignController extends BaseController {
      * 老师删除非法签到学生
      * @param id 签到记录id
      */
-    @DeleteMapping("/sign-record/delete")
-    public AjaxResult deleteFakeSignRecord(String[] id){
+    @DeleteMapping("/sign-record/delete/{id}")
+    public AjaxResult deleteFakeSignRecord(@PathVariable("id") String[] id){
         return toAjax(spmSignRecordService.deleteSpmSignRecordByIds(id));
     }
 

@@ -33,7 +33,7 @@ public class SpmSignRecord extends BaseEntity
     private String studentName;
 
     /** 签到时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:SS")
     @Excel(name = "签到时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date signTime;
 

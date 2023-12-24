@@ -194,6 +194,13 @@ export const dynamicRoutes = [
             permission: [],
             meta: {title: '作业详情',  showFather: false},
             component: ()=>import("../views/spm/teacher/course-detail/homework/TeacherHomework")
+          },
+          {
+            path: 'signIndex/:signIndex',
+            name: 'SignDetail',
+            permission: [],
+            meta: {title: '签到详情',  showFather: false},
+            component: ()=>import("../views/spm/teacher/course-detail/sign/TeacherSign")
           }
         ]
       }

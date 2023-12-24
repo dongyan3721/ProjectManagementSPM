@@ -25,12 +25,12 @@ public class SpmSign extends BaseEntity
     private String courseId;
 
     /** 签到开始时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:SS")
     @Excel(name = "签到开始时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date beginTime;
 
     /** 签到结束时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:SS")
     @Excel(name = "签到结束时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date endTime;
 

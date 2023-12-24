@@ -31,6 +31,10 @@ export default {
   },
   methods:{
     handleAppendixDownload(){
+      if(!this.downloadPath){
+        this.$modal.msgWarning("本作业暂无附件！")
+        return
+      }
       download(this.downloadPath, {}, `${this.title}.${parseFileExtend(this.downloadPath)}`);
     }
   }

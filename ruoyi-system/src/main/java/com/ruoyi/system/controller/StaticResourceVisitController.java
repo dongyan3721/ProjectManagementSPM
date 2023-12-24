@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 /**
@@ -19,8 +20,12 @@ import java.net.URLDecoder;
 @RequestMapping()
 public class StaticResourceVisitController {
 
-    @RequestMapping(value = "/static/**", method = RequestMethod.GET)
-    public void getStaticResourceGet(HttpServletResponse response, HttpServletRequest request) throws Exception {
+    /**
+     * 自定义资源访问处理器
+     * @param response 返回响应
+     * @param request 请求
+     */
+    private void privateService(HttpServletResponse response, HttpServletRequest request) throws Exception {
         String decode = URLDecoder.decode(request.getRequestURL().toString(), "UTF-8");
         String resourceName = decode.replace("http://localhost:8080/static/", "");
         if(!FileUtils.checkAllowDownload(resourceName)){
@@ -33,17 +38,13 @@ public class StaticResourceVisitController {
         FileUtils.writeBytes(fullPath, response.getOutputStream());
     }
 
+    @RequestMapping(value = "/static/**", method = RequestMethod.GET)
+    public void getStaticResourceGet(HttpServletResponse response, HttpServletRequest request) throws Exception {
+        privateService(response, request);
+    }
+
     @RequestMapping(value = "/static/**", method = RequestMethod.POST)
     public void getStaticResourcePost(HttpServletResponse response, HttpServletRequest request) throws Exception {
-        String decode = URLDecoder.decode(request.getRequestURL().toString(), "UTF-8");
-        String resourceName = decode.replace("http://localhost:8080/static/", "");
-        if(!FileUtils.checkAllowDownload(resourceName)){
-            throw new Exception(String.format("请求的文件%s不存在！", resourceName));
-        }
-        String fullPath = RuoYiConfig.getDownloadPath() + resourceName;
-        System.out.println(fullPath);
-        response.setContentType(MediaType.IMAGE_JPEG_VALUE);
-        FileUtils.setAttachmentResponseHeader(response, resourceName);
-        FileUtils.writeBytes(fullPath, response.getOutputStream());
+        privateService(response, request);
     }
 }

@@ -78,19 +78,19 @@ export default {
       })
     },
     requestAllSelectStu(){
-      this.signLoading = true
+      this.unSignLoading = true
       querySelfCourseStudentSelect(this.courseId).then(res=>{
         this.unsigned = res.rows
-        console.log(this.unsigned)
-        this.signLoading = false
+        // console.log(this.unsigned)
+        this.unSignLoading = false
       })
     },
     requestSignedStudent(){
-      this.unSignLoading = true;
+      this.signLoading = true;
       querySatisfiedSignRecord({signId: this.signId}).then(res=>{
         this.signed = res.rows
-        console.log(this.signed)
-        this.unSignLoading = false
+        // console.log(this.signed)
+        this.signLoading = false
       })
     }
   },
@@ -102,9 +102,9 @@ export default {
       if(this.unsigned.length!=0&&this.prove){
         let ids = [];
         for (let i = 0; i < this.signed.length; i++) {
-          ids.push(this.signed[i])
+          ids.push(this.signed[i].studentId)
         }
-        let s = this.unsigned.map(item=>{
+        let s = this.unsigned.map(function(item){
           function inList(item, list) {
             for(let i=0;i<list.length;++i){
               if(item==list[i]){
@@ -115,7 +115,7 @@ export default {
           }
           return inList(item.id, ids)?null:item
         })
-        .filter(item=>{
+        .filter(function(item){
           return item!==null
         })
         this.unsigned = s;
@@ -129,9 +129,9 @@ export default {
       if(this.signed.length!=0&&this.prove){
         let ids = [];
         for (let i = 0; i < this.signed.length; i++) {
-          ids.push(this.signed[i])
+          ids.push(this.signed[i].studentId)
         }
-        let s = this.unsigned.map(item=>{
+        let s = this.unsigned.map(function(item){
           function inList(item, list) {
             for(let i=0;i<list.length;++i){
               if(item==list[i]){
@@ -142,7 +142,7 @@ export default {
           }
           return inList(item.id, ids)?null:item
         })
-          .filter(item=>{
+          .filter(function(item){
             return item!==null
           })
         this.unsigned = s;
